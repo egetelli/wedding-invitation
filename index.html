@@ -12,19 +12,28 @@
         rel="stylesheet">
 
     <style>
-        /* --- GENEL AYARLAR --- */
+        /* --- GENEL & TEMA AYARLARI --- */
         :root {
             --bg-color: #Fdfcf9;
-            /* Açık krem/ekru arka plan */
             --dark-green: #1A4329;
-            /* Geri sayım ve vurgu rengi */
             --text-main: #333333;
             --text-light: #777777;
             --gold: #C5A059;
             --env-color: #FAF6F0;
-            /* Zarfın dış kağıt rengi */
             --env-dark: #E8DFD3;
-            /* Zarfın iç (karanlık) rengi */
+            --card-bg: #ffffff;
+            --border-color: #dddddd;
+        }
+
+        /* DARK MODE (Gece Modu) Renkleri */
+        body.dark-mode {
+            --bg-color: #121212;
+            --dark-green: #245736;
+            --text-main: #f0f0f0;
+            --text-light: #bbbbbb;
+            --gold: #dfb96f;
+            --card-bg: #1e1e1e;
+            --border-color: #333333;
         }
 
         * {
@@ -34,15 +43,20 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        html {
+            scroll-behavior: smooth;
+            /* Anchor linkler için yumuşak kaydırma */
+        }
+
         body {
             font-family: 'Montserrat', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             overflow: hidden;
-            /* Zarf açılana kadar kaydırmayı engelle */
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
 
-        /* --- 1. FULL EKRAN ZARF (YENİ TASARIM) --- */
+        /* --- 1. FULL EKRAN ZARF --- */
         #intro-screen {
             position: fixed;
             inset: 0;
@@ -50,10 +64,9 @@
             z-index: 100;
             transition: opacity 1.2s ease, visibility 1.2s;
             overflow: hidden;
-            /* Zarfı tamamen ekranı kaplayacak şekilde ayarlıyoruz */
         }
 
-        /* Zarfın İçi (Kapaklar açıldığında görünen koyu kısım) */
+        /* Zarfın içi dışı ve kapak animasyonları */
         .env-bg {
             position: absolute;
             inset: 0;
@@ -61,14 +74,11 @@
             z-index: 0;
         }
 
-        /* Kapak Taşıyıcıları (Gölgeler için gerekli) */
         .flap-wrapper {
             position: absolute;
             inset: 0;
             filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.06));
-            /* Kapakların kağıt gölgesi */
             pointer-events: none;
-            /* Tıklamaların mühre geçmesi için */
         }
 
         .flap-shape {
@@ -76,17 +86,14 @@
             background-color: var(--env-color);
         }
 
-        /* Sol Kapak */
         .left-shape {
             top: -2px;
             bottom: -2px;
             left: -2px;
             width: 52vw;
-            /* Ortaya kadar gelir, hafif üst üste biner */
             clip-path: polygon(0 0, 100% 50%, 0 100%);
         }
 
-        /* Sağ Kapak */
         .right-shape {
             top: -2px;
             bottom: -2px;
@@ -95,7 +102,6 @@
             clip-path: polygon(100% 0, 0 50%, 100% 100%);
         }
 
-        /* Alt Kapak (Sol ve Sağın üstünde) */
         .bottom-shape {
             left: -2px;
             right: -2px;
@@ -104,7 +110,6 @@
             clip-path: polygon(0 100%, 50% 0, 100% 100%);
         }
 
-        /* Üst Kapak (En üstte, açılacak olan kapak) */
         .top-shape {
             left: -2px;
             right: -2px;
@@ -115,7 +120,6 @@
             transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Mühür Tasarımı (Pembe, 3D etkili) */
         .seal {
             position: absolute;
             top: 50%;
@@ -124,7 +128,6 @@
             width: 85px;
             height: 85px;
             background: radial-gradient(circle, #E3A8B3 0%, #C36A7B 100%);
-            /* İstenen Pembe Mum Rengi */
             border-radius: 50%;
             z-index: 10;
             display: flex;
@@ -137,7 +140,6 @@
             box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2), inset 0 4px 6px rgba(255, 255, 255, 0.4), inset 0 -4px 6px rgba(0, 0, 0, 0.15);
             cursor: pointer;
             pointer-events: auto;
-            /* Mühür tıklanabilir olmalı */
             transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
@@ -149,7 +151,6 @@
             box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.1);
         }
 
-        /* AÇILMA ANİMASYONU SINIFLARI */
         #intro-screen.open-env .seal {
             opacity: 0;
             transform: translate(-50%, -50%) scale(1.3);
@@ -160,15 +161,20 @@
             transform: rotateX(180deg);
         }
 
+        /* KALP ANİMASYONU (Zarf açılırken) */
+        @keyframes floatUp {
+            to {
+                transform: translateY(-120vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
 
-        /* --- 2. ASIL DAVETİYE SAYFASI (Scroll Edilecek Alan) --- */
+        /* --- 2. ASIL DAVETİYE SAYFASI --- */
         #main-page {
             display: none;
-            /* Başlangıçta gizli */
             opacity: 0;
             transition: opacity 1s ease;
             max-width: 500px;
-            /* Telefon görünümü için ortalanmış kutu */
             margin: 0 auto;
             background-color: var(--bg-color);
             min-height: 100vh;
@@ -197,7 +203,19 @@
             margin-bottom: 30px;
         }
 
-        /* --- YENİ HERO (KARŞILAMA) BÖLÜMÜ --- */
+        /* YUMUŞAK BELİRME (FADE-IN) ANİMASYONU */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .fade-in.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- HERO BÖLÜMÜ --- */
         .hero {
             position: relative;
             min-height: 100vh;
@@ -206,12 +224,10 @@
             justify-content: center;
             align-items: center;
             padding: 0;
-            /* Tam ekran kaplaması için sıfırlandı */
             overflow: hidden;
-            background-color: #Fdfcf9;
+            background-color: var(--bg-color);
         }
 
-        /* Üstten Sarkan Çiçekler */
         .floral-top {
             position: absolute;
             top: 0;
@@ -219,16 +235,13 @@
             width: 100%;
             height: auto;
             max-height: 35vh;
-            /* Ekranın üst %35'ini kaplar */
             object-fit: contain;
             object-position: top center;
             z-index: 0;
             opacity: 0.95;
             transform: scale(1.05);
-            /* Kenar boşluklarını silmek için hafif büyüme */
         }
 
-        /* Alttaki Çiçekler */
         .floral-bottom {
             position: absolute;
             bottom: 0;
@@ -241,35 +254,31 @@
             z-index: 0;
             opacity: 0.8;
             transform: rotate(180deg) scale(1.05);
-            /* Aynı PNG'yi alt için çevirdik */
         }
 
-        /* İçerik Kutusu */
         .hero-content {
             position: relative;
             z-index: 1;
-            /* Çiçeklerin üstünde kalmalı */
             text-align: center;
             width: 100%;
             padding: 0 20px;
             margin-top: 5vh;
-            /* Çiçeklerle iç içe girmemesi için boşluk */
         }
 
         .hero-names {
             font-family: 'Playfair Display', serif;
             font-size: 52px;
             font-weight: 400;
-            color: #2b3a32;
-            /* Koyu antrasit yeşili */
+            color: var(--text-main);
             margin: 0 0 10px 0;
             letter-spacing: -1px;
+            transition: color 0.5s;
         }
 
         .hero-names .ampersand {
             font-size: 32px;
             font-style: italic;
-            color: #999;
+            color: var(--text-light);
             margin: 0 5px;
             vertical-align: middle;
         }
@@ -277,7 +286,7 @@
         .hero-parents {
             font-family: 'Montserrat', sans-serif;
             font-size: 9px;
-            color: #888;
+            color: var(--text-light);
             letter-spacing: 2.5px;
             text-transform: uppercase;
             margin: 0 0 25px 0;
@@ -285,19 +294,19 @@
 
         .hero-parents .dot {
             margin: 0 8px;
-            color: #d1bfae;
+            color: var(--gold);
         }
 
         .hero-divider {
             margin: 20px 0;
-            color: #d1bfae;
+            color: var(--gold);
             opacity: 0.8;
         }
 
         .hero-date {
             font-size: 14px;
             letter-spacing: 4px;
-            color: #444;
+            color: var(--text-main);
             font-weight: 500;
             margin-bottom: 25px;
         }
@@ -306,33 +315,31 @@
             font-family: 'Playfair Display', serif;
             font-size: 14px;
             line-height: 1.8;
-            color: #666;
+            color: var(--text-light);
             font-style: italic;
             max-width: 320px;
             margin: 0 auto 40px auto;
         }
 
+        /* Butonlar */
         .hero-rsvp-btn {
             display: inline-block;
             font-family: 'Montserrat', sans-serif;
             font-size: 10px;
             letter-spacing: 2px;
-            color: #2b3a32;
+            color: var(--text-main);
             text-decoration: none;
             text-transform: uppercase;
             font-weight: 600;
-            border-bottom: 1px solid #2b3a32;
+            border-bottom: 1px solid var(--text-main);
             padding-bottom: 3px;
             transition: opacity 0.3s;
-        }
-
-        .hero-rsvp-btn:active {
-            opacity: 0.5;
+            margin-bottom: 15px;
         }
 
         .hero-scroll-indicator {
-            margin-top: 45px;
-            color: #999;
+            margin-top: 25px;
+            color: var(--text-light);
             animation: bounce 2s infinite;
         }
 
@@ -355,15 +362,13 @@
             }
         }
 
-
-        /* Geri Sayım Bölümü */
+        /* --- GERİ SAYIM --- */
         .countdown-section {
             background-color: var(--dark-green);
             color: white;
             border-radius: 20px 20px 0 0;
             padding: 40px 20px;
             margin-top: -20px;
-            /* Hero'nun altına yumuşak geçiş için */
             position: relative;
             z-index: 2;
         }
@@ -409,48 +414,10 @@
             color: rgba(255, 255, 255, 0.7);
         }
 
-        /* Hikayemiz (Carousel - YENİ DÜZENLEME) */
+        /* --- HİKAYEMİZ & CAROUSEL --- */
         .story-section {
-            background-color: white;
+            background-color: var(--card-bg);
             padding-top: 50px;
-        }
-
-        .carousel {
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            gap: 15px;
-            padding: 20px;
-            /* Kenarlardan boşluk bırakarak kaydırılabilir hissini artırdık */
-            scrollbar-width: none;
-            -webkit-overflow-scrolling: touch;
-            /* Mobilde akıcı kaydırma */
-            cursor: grab;
-            /* PC için tutup çekme ikonu */
-        }
-
-        .carousel:active {
-            cursor: grabbing;
-            /* Tıklanınca yumruk şeklinde ikon */
-        }
-
-        .carousel::-webkit-scrollbar {
-            display: none;
-        }
-
-        .carousel img {
-            scroll-snap-align: center;
-            width: 240px;
-            /* Boyut 250'den 240'a düşürüldü, diğer fotoğrafın ucu peeking yapsın diye */
-            height: 320px;
-            object-fit: cover;
-            border-radius: 15px;
-            flex-shrink: 0;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            user-select: none;
-            /* Mouse ile çekerken fotoğrafı indirme tepkisini engeller */
-            -webkit-user-drag: none;
-            /* Safari/Chrome PC drag engeli */
         }
 
         .story-text {
@@ -461,7 +428,44 @@
             padding: 0 10px;
         }
 
-        /* Lokasyon Bölümü */
+        .carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 15px;
+            padding: 20px;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            cursor: grab;
+        }
+
+        .carousel:active {
+            cursor: grabbing;
+        }
+
+        .carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .carousel img {
+            scroll-snap-align: center;
+            width: 240px;
+            height: 320px;
+            object-fit: cover;
+            border-radius: 15px;
+            flex-shrink: 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            user-select: none;
+            -webkit-user-drag: none;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .carousel img:hover {
+            transform: scale(1.02);
+        }
+
+        /* --- LOKASYON --- */
         .location-section {
             background-color: var(--bg-color);
         }
@@ -489,13 +493,9 @@
             transition: opacity 0.3s;
         }
 
-        .map-btn:active {
-            opacity: 0.8;
-        }
-
-        /* Düğün Akışı (Timeline) */
+        /* --- TIMELINE (Düğün Akışı) --- */
         .timeline-section {
-            background-color: white;
+            background-color: var(--card-bg);
             border-radius: 20px 20px 0 0;
         }
 
@@ -513,7 +513,7 @@
             top: 0;
             bottom: 0;
             width: 1px;
-            background-color: #ddd;
+            background-color: var(--border-color);
         }
 
         .timeline-item {
@@ -529,7 +529,7 @@
             width: 40px;
             height: 40px;
             background-color: var(--bg-color);
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -559,55 +559,147 @@
             margin-top: 3px;
         }
 
-        /* Ses Kontrol Butonu */
-        .audio-btn {
+        /* --- LCV FORMU (RSVP) --- */
+        .rsvp-section {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            margin: 20px 20px;
+            padding: 40px 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .rsvp-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .rsvp-form input,
+        .rsvp-form select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            outline: none;
+        }
+
+        .rsvp-form input:focus,
+        .rsvp-form select:focus {
+            border-color: var(--gold);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .radio-label {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--text-main);
+        }
+
+        .submit-btn {
+            background-color: var(--dark-green);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 25px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        #rsvp-success {
+            display: none;
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-top: 20px;
+            border: 1px solid #c8e6c9;
+        }
+
+        /* --- SABİT BUTONLAR (Müzik, WhatsApp, Gece Modu) --- */
+        .floating-buttons {
             position: fixed;
             bottom: 20px;
             right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 50;
+        }
+
+        .float-btn {
             width: 45px;
             height: 45px;
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: var(--card-bg);
             border-radius: 50%;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            z-index: 50;
             font-size: 20px;
-            border: 1px solid #eee;
+            border: 1px solid var(--border-color);
+            text-decoration: none;
+            color: var(--text-main);
+            transition: transform 0.2s;
+        }
+
+        .float-btn:active {
+            transform: scale(0.9);
+        }
+
+        .whatsapp-btn {
+            background-color: #25D366;
+            color: white;
+            border: none;
+            font-size: 24px;
         }
     </style>
 </head>
 
 <body>
 
+    <!-- ARKA PLAN MÜZİĞİ -->
+    <audio id="bg-music" loop>
+        <source src="music.mp3" type="audio/mpeg">
+        <!-- Not: Kendi müziğini yüklemek için "music.mp3" yerine link koyabilirsin -->
+    </audio>
+
     <!-- 1. FULL EKRAN ZARF (YENİ TASARIM) -->
     <div id="intro-screen">
-        <!-- Zarfın İçi -->
         <div class="env-bg"></div>
-
-        <!-- Sol Kapak -->
         <div class="flap-wrapper" style="z-index: 1;">
             <div class="flap-shape left-shape"></div>
         </div>
-
-        <!-- Sağ Kapak -->
         <div class="flap-wrapper" style="z-index: 1;">
             <div class="flap-shape right-shape"></div>
         </div>
-
-        <!-- Alt Kapak -->
         <div class="flap-wrapper" style="z-index: 2;">
             <div class="flap-shape bottom-shape"></div>
         </div>
-
-        <!-- Üst Kapak (Hareket Eden Kısım) -->
         <div class="flap-wrapper" id="top-flap-wrapper" style="z-index: 3;">
             <div class="flap-shape top-shape"></div>
         </div>
 
-        <!-- Pembe Mum Mühür -->
+        <!-- Mühür -->
         <div class="seal" onclick="openAndProceed()">
             <div class="seal-ring"></div>
             <span>K&E</span>
@@ -617,22 +709,18 @@
     <!-- 2. ASIL DAVETİYE İÇERİĞİ -->
     <div id="main-page">
 
-        <!-- YENİ: Hero (Karşılama) Bölümü -->
-        <section class="hero">
-            <!-- Üstten sarkan zarif pembe/yeşil çiçek görseli (Şeffaf PNG) -->
-            <img src="images/topflower.png" alt="Üst Süsleme" class="floral-top">
+        <!-- Hero (Karşılama) Bölümü -->
+        <section class="hero fade-in">
+            <img src="images/topflowerr.png" alt="Üst Süsleme" class="floral-top">
 
             <div class="hero-content">
                 <h1 class="hero-names">Kübra <span class="ampersand">&</span> Ege</h1>
 
                 <p class="hero-parents">
-                    YASEMİN & ABDULKERİM TUFAN <br>
-                    <span class="dot">•</span><br>
-                    OYA & ERHAN TELLİ
+                    YASEMİN & ABDULKERİM TUFAN <br><span class="dot">•</span><br> OYA & ERHAN TELLİ
                 </p>
 
                 <div class="hero-divider">
-                    <!-- Zarif küçük bir ikon/ayraç -->
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path
@@ -647,9 +735,9 @@
                     Bu özel günümüzde mutluluğumuzu paylaşmak için<br>sizleri de aramızda görmekten onur duyarız.
                 </p>
 
-                <!-- <a href="#" class="hero-rsvp-btn">KATILIMINI ONAYLA</a> -->
+                <!-- Anchor link ile form'a yumuşak kayış -->
+                <a href="#rsvp-bolumu" class="hero-rsvp-btn">KATILIMINI ONAYLA</a>
 
-                <!-- Aşağı Kaydır Oku -->
                 <div class="hero-scroll-indicator">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
                         stroke-linecap="round" stroke-linejoin="round">
@@ -660,32 +748,24 @@
         </section>
 
         <!-- Geri Sayım Bölümü -->
-        <section class="countdown-section">
+        <section class="countdown-section fade-in">
             <h2 class="section-title">Geri Sayım</h2>
             <p style="font-size: 11px; opacity: 0.8;">Büyük güne kalan süre</p>
 
             <div class="countdown-grid">
-                <div class="countdown-item">
-                    <span class="countdown-number" id="days">00</span>
-                    <span class="countdown-label">Gün</span>
-                </div>
-                <div class="countdown-item">
-                    <span class="countdown-number" id="hours">00</span>
-                    <span class="countdown-label">Saat</span>
-                </div>
-                <div class="countdown-item">
-                    <span class="countdown-number" id="minutes">00</span>
-                    <span class="countdown-label">Dakika</span>
-                </div>
-                <div class="countdown-item">
-                    <span class="countdown-number" id="seconds">00</span>
-                    <span class="countdown-label">Saniye</span>
-                </div>
+                <div class="countdown-item"><span class="countdown-number" id="days">00</span><span
+                        class="countdown-label">Gün</span></div>
+                <div class="countdown-item"><span class="countdown-number" id="hours">00</span><span
+                        class="countdown-label">Saat</span></div>
+                <div class="countdown-item"><span class="countdown-number" id="minutes">00</span><span
+                        class="countdown-label">Dakika</span></div>
+                <div class="countdown-item"><span class="countdown-number" id="seconds">00</span><span
+                        class="countdown-label">Saniye</span></div>
             </div>
         </section>
 
         <!-- Hikayemiz (Carousel) -->
-        <section class="story-section">
+        <section class="story-section fade-in">
             <h2 class="section-title">Hikayemiz</h2>
             <p class="story-text">Birlikte başladığımız bu güzel yolculukta, en özel günümüzde sizleri de yanımızda
                 görmekten mutluluk duyarız.</p>
@@ -695,27 +775,27 @@
                 <img src="images/foto2.jpeg" alt="Düğün Konsepti">
                 <img src="images/foto1.jpeg" alt="Çift Fotoğrafı">
             </div>
+            <p style="font-size: 10px; color: var(--text-light); margin-top: 10px;">(Büyütmek için fotoğrafa tıklayın)
+            </p>
         </section>
 
         <!-- Lokasyon Bölümü -->
-        <section class="location-section">
+        <section class="location-section fade-in">
             <h2 class="section-title">Lokasyon</h2>
             <p class="section-subtitle">Villa Marry Garden & Lounge</p>
 
-            <!-- KENDİ MEKAN RESMİNİ EKLE: src="images/mekan.jpg" -->
             <img src="images/villamarry.jpeg" alt="Düğün Mekanı" class="venue-img">
 
             <p style="font-size: 13px; color: var(--text-light); line-height: 1.6;">
                 Kızılcaşar, Incek Şht. Savcı Mehmet Selim Kiraz Blv No:317, 06770 <br>Gölbaşı/Ankara
             </p>
 
-            <!-- Google Haritalar Linkini Buraya Ekle -->
             <a href="https://www.google.com/maps/place/Villa+Marry+Garden+%26+Lounge/@39.8128486,32.709854,17z/data=!3m1!4b1!4m6!3m5!1s0x14d33fbd93c3056d:0x7a721f36ce56c86f!8m2!3d39.8128457!4d32.7116747!16s%2Fg%2F11kq7j0ql5?entry=ttu&g_ep=EgoyMDI2MDMxOC4xIKXMDSoASAFQAw%3D%3D"
                 target="_blank" class="map-btn">Haritada Aç</a>
         </section>
 
         <!-- Düğün Akışı -->
-        <section class="timeline-section">
+        <section class="timeline-section fade-in">
             <h2 class="section-title">Düğün Akışı</h2>
             <p class="section-subtitle">Program Detayları</p>
 
@@ -752,26 +832,99 @@
                 </div>
             </div>
 
-            <!-- Alt Çiçek Süslemesi -->
             <img src="images/bottom-flowers.png" alt="Alt Süsleme"
                 style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin-top: 40px;">
         </section>
 
+        <!-- LCV (KATILIM ONAYI) BÖLÜMÜ -->
+        <section id="rsvp-bolumu" class="rsvp-section fade-in">
+            <h2 class="section-title">Katılım Onayı</h2>
+            <p class="section-subtitle">Lütfen katılım durumunuzu bildirin</p>
+
+            <form class="rsvp-form" onsubmit="submitRSVP(event)">
+                <div>
+                    <label style="font-size:11px; color:var(--text-light);">Adınız ve Soyadınız</label>
+                    <input type="text" placeholder="Örn: Ahmet Yılmaz" required>
+                </div>
+
+                <div>
+                    <label style="font-size:11px; color:var(--text-light); margin-top:10px;">Katılım Durumu</label>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="status" value="yes" checked> Evet,
+                            Geliyorum</label>
+                        <label class="radio-label"><input type="radio" name="status" value="no"> Maalesef
+                            Katılamıyorum</label>
+                    </div>
+                </div>
+
+                <div>
+                    <label style="font-size:11px; color:var(--text-light); margin-top:10px;">Kişi Sayısı</label>
+                    <select>
+                        <option>1 Kişi</option>
+                        <option>2 Kişi</option>
+                        <option>3 Kişi</option>
+                        <option>4 Kişi</option>
+                        <option>5+ Kişi</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-btn">Gönder</button>
+            </form>
+            <div id="rsvp-success">Teşekkürler! Yanıtınız bize ulaştı. 🤍</div>
+        </section>
+
+        <br><br>
+
     </div>
 
-    <!-- Sağ Alt Müzik / Ses İkonu -->
-    <div class="audio-btn" onclick="toggleAudio()">
-        <span id="audio-icon">🔊</span>
+    <!-- Sabit Butonlar Grubu -->
+    <div class="floating-buttons">
+        <!-- WhatsApp Paylaş -->
+        <a href="https://wa.me/?text=Düğünümüze davetlisiniz! Kübra & Ege - 5 Temmuz 2026" target="_blank"
+            class="float-btn whatsapp-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path
+                    d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                </path>
+            </svg>
+        </a>
+        <!-- Dark Mode Toggle -->
+        <div class="float-btn" onclick="toggleDarkMode()" id="theme-icon">🌙</div>
+        <!-- Müzik Toggle -->
+        <div class="float-btn" onclick="toggleAudio()"><span id="audio-icon">🔇</span></div>
     </div>
 
     <script>
-        /* --- 1. Full Ekran Zarf ve Geçiş Animasyonu --- */
+        /* --- 1. ZARF AÇILIŞI, MÜZİK VE KALP ANİMASYONU --- */
+        let isPlaying = false;
+
         function openAndProceed() {
             const introScreen = document.getElementById('intro-screen');
             const mainPage = document.getElementById('main-page');
+            const music = document.getElementById('bg-music');
+            const audioIcon = document.getElementById('audio-icon');
 
+            // Zarfı aç
             introScreen.classList.add('open-env');
 
+            // 🎵 MÜZİĞİ BAŞLAT
+            music.play().then(() => {
+                isPlaying = true;
+                audioIcon.innerHTML = '🔊';
+            }).catch(() => {
+                console.log("Tarayıcı otomatik müziği engelledi.");
+            });
+
+            // 💖 KALP ŞÖLENİ (Zarf açılırken küçük kalpler uçar)
+            let heartCount = 0;
+            let heartInterval = setInterval(() => {
+                createHeart();
+                heartCount++;
+                if (heartCount > 15) clearInterval(heartInterval); // Çok abartmamak için 15 kalp yeterli
+            }, 200);
+
+            // Sayfa geçişleri
             setTimeout(() => {
                 mainPage.style.display = 'block';
                 introScreen.style.opacity = '0';
@@ -787,9 +940,123 @@
             }, 900);
         }
 
-        /* --- 2. Geri Sayım Sayacı --- */
-        const countDownDate = new Date("Jul 5, 2026 19:00:00").getTime();
+        // Kalp Oluşturma Fonksiyonu
+        function createHeart() {
+            const heart = document.createElement("div");
+            heart.innerHTML = "🤍"; // Beyaz zarif kalp (rengini 💖 de yapabilirsin)
+            heart.style.position = "fixed";
+            heart.style.left = Math.random() * 100 + "vw";
+            heart.style.top = "100vh";
+            heart.style.fontSize = (Math.random() * 15 + 15) + "px";
+            heart.style.zIndex = "99";
+            heart.style.pointerEvents = "none";
+            heart.style.animation = `floatUp ${Math.random() * 2 + 3}s linear`;
+            document.body.appendChild(heart);
 
+            setTimeout(() => heart.remove(), 4000);
+        }
+
+        /* --- MÜZİK KONTROLÜ --- */
+        function toggleAudio() {
+            const icon = document.getElementById('audio-icon');
+            const music = document.getElementById('bg-music');
+
+            if (isPlaying) {
+                music.pause();
+                icon.innerHTML = '🔇';
+            } else {
+                music.play();
+                icon.innerHTML = '🔊';
+            }
+            isPlaying = !isPlaying;
+        }
+
+        /* --- 2. AŞAĞI KAYDIRDIKÇA YAVAŞÇA BELİRME (FADE-IN) --- */
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('show');
+                }
+            });
+        }, { threshold: 0.1 }); // Ekranda %10'u görününce animasyon başlar
+
+        document.querySelectorAll('.fade-in').forEach(sec => {
+            observer.observe(sec);
+        });
+
+        /* --- 3. FOTOĞRAFLARI BÜYÜTME (LIGHTBOX) --- */
+        document.querySelectorAll('.carousel img').forEach(img => {
+            img.addEventListener('click', () => {
+                const overlay = document.createElement('div');
+                overlay.style = `
+                    position: fixed; inset: 0;
+                    background: rgba(0,0,0,0.85);
+                    display: flex; justify-content: center; align-items: center;
+                    z-index: 9999; backdrop-filter: blur(5px);
+                    opacity: 0; transition: opacity 0.3s ease;
+                `;
+
+                const bigImg = document.createElement('img');
+                bigImg.src = img.src;
+                bigImg.style.maxWidth = '90%';
+                bigImg.style.maxHeight = '90%';
+                bigImg.style.borderRadius = '10px';
+                bigImg.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+                bigImg.style.transform = 'scale(0.8)';
+                bigImg.style.transition = 'transform 0.3s ease';
+
+                overlay.appendChild(bigImg);
+                document.body.appendChild(overlay);
+
+                // Animasyonlu Açılış
+                setTimeout(() => {
+                    overlay.style.opacity = '1';
+                    bigImg.style.transform = 'scale(1)';
+                }, 10);
+
+                // Tıklayınca Kapanış
+                overlay.onclick = () => {
+                    overlay.style.opacity = '0';
+                    bigImg.style.transform = 'scale(0.8)';
+                    setTimeout(() => overlay.remove(), 300);
+                };
+            });
+        });
+
+        /* --- 4. GECE MODU (DARK MODE) --- */
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.getElementById('theme-icon');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.innerHTML = '☀️';
+            } else {
+                icon.innerHTML = '🌙';
+            }
+        }
+
+        /* --- 5. CAROUSEL MOUSE DRAG --- */
+        const slider = document.getElementById('photo-carousel');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        slider.addEventListener('mousedown', (e) => {
+            isDown = true;
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+        });
+        slider.addEventListener('mouseleave', () => { isDown = false; });
+        slider.addEventListener('mouseup', () => { isDown = false; });
+        slider.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - slider.offsetLeft;
+            const walk = (x - startX) * 2;
+            slider.scrollLeft = scrollLeft - walk;
+        });
+
+        /* --- 6. GERİ SAYIM --- */
+        const countDownDate = new Date("Jul 5, 2026 19:00:00").getTime();
         const x = setInterval(function () {
             const now = new Date().getTime();
             const distance = countDownDate - now;
@@ -803,56 +1070,14 @@
             document.getElementById("hours").innerHTML = hours < 10 ? "0" + hours : hours;
             document.getElementById("minutes").innerHTML = minutes < 10 ? "0" + minutes : minutes;
             document.getElementById("seconds").innerHTML = seconds < 10 ? "0" + seconds : seconds;
-
-            if (distance < 0) {
-                clearInterval(x);
-                document.getElementById("days").innerHTML = "00";
-                document.getElementById("hours").innerHTML = "00";
-                document.getElementById("minutes").innerHTML = "00";
-                document.getElementById("seconds").innerHTML = "00";
-            }
         }, 1000);
 
-        /* --- 3. Ses Butonu Toggle --- */
-        let isPlaying = true;
-        function toggleAudio() {
-            const icon = document.getElementById('audio-icon');
-            if (isPlaying) {
-                icon.innerHTML = '🔇';
-                isPlaying = false;
-            } else {
-                icon.innerHTML = '🔊';
-                isPlaying = true;
-            }
-        }
-
-
-        const slider = document.getElementById('photo-carousel');
-        let isDown = false;
-        let startX;
-        let scrollLeft;
-
-        slider.addEventListener('mousedown', (e) => {
-            isDown = true;
-            startX = e.pageX - slider.offsetLeft;
-            scrollLeft = slider.scrollLeft;
-        });
-
-        slider.addEventListener('mouseleave', () => {
-            isDown = false;
-        });
-
-        slider.addEventListener('mouseup', () => {
-            isDown = false;
-        });
-
-        slider.addEventListener('mousemove', (e) => {
-            if (!isDown) return;
+        /* --- 7. LCV GÖNDERİM --- */
+        function submitRSVP(e) {
             e.preventDefault();
-            const x = e.pageX - slider.offsetLeft;
-            const walk = (x - startX) * 2; // Kaydırma hızını ayarlayabilirsin
-            slider.scrollLeft = scrollLeft - walk;
-        });
+            e.target.style.display = 'none';
+            document.getElementById('rsvp-success').style.display = 'block';
+        }
     </script>
 </body>
 
