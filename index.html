@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kübra & Ege | Düğün Davetiyesi</title>
+
+    <!-- Google Fonts: Playfair Display (Başlıklar) ve Montserrat (Metinler) -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* --- GENEL AYARLAR --- */
+        :root {
+            --bg-color: #Fdfcf9;
+            /* Açık krem/ekru arka plan */
+            --dark-green: #1A4329;
+            /* Geri sayım ve vurgu rengi */
+            --text-main: #333333;
+            --text-light: #777777;
+            --gold: #C5A059;
+            --env-color: #FAF6F0;
+            /* Zarfın dış kağıt rengi */
+            --env-dark: #E8DFD3;
+            /* Zarfın iç (karanlık) rengi */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow: hidden;
+            /* Zarf açılana kadar kaydırmayı engelle */
+        }
+
+        /* --- 1. FULL EKRAN ZARF (YENİ TASARIM) --- */
+        #intro-screen {
+            position: fixed;
+            inset: 0;
+            background-color: #ffffff;
+            z-index: 100;
+            transition: opacity 1.2s ease, visibility 1.2s;
+            overflow: hidden;
+            /* Zarfı tamamen ekranı kaplayacak şekilde ayarlıyoruz */
+        }
+
+        /* Zarfın İçi (Kapaklar açıldığında görünen koyu kısım) */
+        .env-bg {
+            position: absolute;
+            inset: 0;
+            background-color: var(--env-dark);
+            z-index: 0;
+        }
+
+        /* Kapak Taşıyıcıları (Gölgeler için gerekli) */
+        .flap-wrapper {
+            position: absolute;
+            inset: 0;
+            filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.06));
+            /* Kapakların kağıt gölgesi */
+            pointer-events: none;
+            /* Tıklamaların mühre geçmesi için */
+        }
+
+        .flap-shape {
+            position: absolute;
+            background-color: var(--env-color);
+        }
+
+        /* Sol Kapak */
+        .left-shape {
+            top: -2px;
+            bottom: -2px;
+            left: -2px;
+            width: 52vw;
+            /* Ortaya kadar gelir, hafif üst üste biner */
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
+        }
+
+        /* Sağ Kapak */
+        .right-shape {
+            top: -2px;
+            bottom: -2px;
+            right: -2px;
+            width: 52vw;
+            clip-path: polygon(100% 0, 0 50%, 100% 100%);
+        }
+
+        /* Alt Kapak (Sol ve Sağın üstünde) */
+        .bottom-shape {
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            height: 55vh;
+            clip-path: polygon(0 100%, 50% 0, 100% 100%);
+        }
+
+        /* Üst Kapak (En üstte, açılacak olan kapak) */
+        .top-shape {
+            left: -2px;
+            right: -2px;
+            top: -2px;
+            height: 52vh;
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            transform-origin: top;
+            transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Mühür Tasarımı (Pembe, 3D etkili) */
+        .seal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85px;
+            height: 85px;
+            background: radial-gradient(circle, #E3A8B3 0%, #C36A7B 100%);
+            /* İstenen Pembe Mum Rengi */
+            border-radius: 50%;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            font-style: italic;
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2), inset 0 4px 6px rgba(255, 255, 255, 0.4), inset 0 -4px 6px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            pointer-events: auto;
+            /* Mühür tıklanabilir olmalı */
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .seal-ring {
+            position: absolute;
+            inset: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* AÇILMA ANİMASYONU SINIFLARI */
+        #intro-screen.open-env .seal {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(1.3);
+            pointer-events: none;
+        }
+
+        #intro-screen.open-env #top-flap-wrapper .top-shape {
+            transform: rotateX(180deg);
+        }
+
+
+        /* --- 2. ASIL DAVETİYE SAYFASI (Scroll Edilecek Alan) --- */
+        #main-page {
+            display: none;
+            /* Başlangıçta gizli */
+            opacity: 0;
+            transition: opacity 1s ease;
+            max-width: 500px;
+            /* Telefon görünümü için ortalanmış kutu */
+            margin: 0 auto;
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.05);
+            padding-bottom: 80px;
+        }
+
+        section {
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .section-subtitle {
+            font-size: 12px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+
+        /* --- YENİ HERO (KARŞILAMA) BÖLÜMÜ --- */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            /* Tam ekran kaplaması için sıfırlandı */
+            overflow: hidden;
+            background-color: #Fdfcf9;
+        }
+
+        /* Üstten Sarkan Çiçekler */
+        .floral-top {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: auto;
+            max-height: 35vh;
+            /* Ekranın üst %35'ini kaplar */
+            object-fit: contain;
+            object-position: top center;
+            z-index: 0;
+            opacity: 0.95;
+            transform: scale(1.05);
+            /* Kenar boşluklarını silmek için hafif büyüme */
+        }
+
+        /* Alttaki Çiçekler */
+        .floral-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: auto;
+            max-height: 25vh;
+            object-fit: contain;
+            object-position: bottom center;
+            z-index: 0;
+            opacity: 0.8;
+            transform: rotate(180deg) scale(1.05);
+            /* Aynı PNG'yi alt için çevirdik */
+        }
+
+        /* İçerik Kutusu */
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            /* Çiçeklerin üstünde kalmalı */
+            text-align: center;
+            width: 100%;
+            padding: 0 20px;
+            margin-top: 5vh;
+            /* Çiçeklerle iç içe girmemesi için boşluk */
+        }
+
+        .hero-names {
+            font-family: 'Playfair Display', serif;
+            font-size: 52px;
+            font-weight: 400;
+            color: #2b3a32;
+            /* Koyu antrasit yeşili */
+            margin: 0 0 10px 0;
+            letter-spacing: -1px;
+        }
+
+        .hero-names .ampersand {
+            font-size: 32px;
+            font-style: italic;
+            color: #999;
+            margin: 0 5px;
+            vertical-align: middle;
+        }
+
+        .hero-parents {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 9px;
+            color: #888;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            margin: 0 0 25px 0;
+        }
+
+        .hero-parents .dot {
+            margin: 0 8px;
+            color: #d1bfae;
+        }
+
+        .hero-divider {
+            margin: 20px 0;
+            color: #d1bfae;
+            opacity: 0.8;
+        }
+
+        .hero-date {
+            font-size: 14px;
+            letter-spacing: 4px;
+            color: #444;
+            font-weight: 500;
+            margin-bottom: 25px;
+        }
+
+        .hero-invitation {
+            font-family: 'Playfair Display', serif;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #666;
+            font-style: italic;
+            max-width: 320px;
+            margin: 0 auto 40px auto;
+        }
+
+        .hero-rsvp-btn {
+            display: inline-block;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: #2b3a32;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-weight: 600;
+            border-bottom: 1px solid #2b3a32;
+            padding-bottom: 3px;
+            transition: opacity 0.3s;
+        }
+
+        .hero-rsvp-btn:active {
+            opacity: 0.5;
+        }
+
+        .hero-scroll-indicator {
+            margin-top: 45px;
+            color: #999;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+
+        /* Geri Sayım Bölümü */
+        .countdown-section {
+            background-color: var(--dark-green);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            padding: 40px 20px;
+            margin-top: -20px;
+            /* Hero'nun altına yumuşak geçiş için */
+            position: relative;
+            z-index: 2;
+        }
+
+        .countdown-section .section-title {
+            color: white;
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .countdown-item {
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 0;
+        }
+
+        .countdown-item:nth-child(2n) {
+            border-right: none;
+        }
+
+        .countdown-item:nth-child(3),
+        .countdown-item:nth-child(4) {
+            border-bottom: none;
+        }
+
+        .countdown-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            margin-bottom: 5px;
+        }
+
+        .countdown-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Hikayemiz (Carousel - YENİ DÜZENLEME) */
+        .story-section {
+            background-color: white;
+            padding-top: 50px;
+        }
+
+        .carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 15px;
+            padding: 20px;
+            /* Kenarlardan boşluk bırakarak kaydırılabilir hissini artırdık */
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            /* Mobilde akıcı kaydırma */
+            cursor: grab;
+            /* PC için tutup çekme ikonu */
+        }
+
+        .carousel:active {
+            cursor: grabbing;
+            /* Tıklanınca yumruk şeklinde ikon */
+        }
+
+        .carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .carousel img {
+            scroll-snap-align: center;
+            width: 240px;
+            /* Boyut 250'den 240'a düşürüldü, diğer fotoğrafın ucu peeking yapsın diye */
+            height: 320px;
+            object-fit: cover;
+            border-radius: 15px;
+            flex-shrink: 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            user-select: none;
+            /* Mouse ile çekerken fotoğrafı indirme tepkisini engeller */
+            -webkit-user-drag: none;
+            /* Safari/Chrome PC drag engeli */
+        }
+
+        .story-text {
+            font-size: 13px;
+            line-height: 1.8;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        /* Lokasyon Bölümü */
+        .location-section {
+            background-color: var(--bg-color);
+        }
+
+        .venue-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .map-btn {
+            display: inline-block;
+            background-color: var(--dark-green);
+            color: white;
+            text-decoration: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 15px;
+            transition: opacity 0.3s;
+        }
+
+        .map-btn:active {
+            opacity: 0.8;
+        }
+
+        /* Düğün Akışı (Timeline) */
+        .timeline-section {
+            background-color: white;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 300px;
+            margin: 40px auto 0 auto;
+            text-align: left;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background-color: #ddd;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 60px;
+            margin-bottom: 35px;
+        }
+
+        .timeline-icon {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            background-color: var(--bg-color);
+            border: 1px solid #ddd;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            z-index: 2;
+        }
+
+        .timeline-time {
+            font-family: 'Playfair Display', serif;
+            font-size: 16px;
+            color: var(--gold);
+            margin-bottom: 3px;
+        }
+
+        .timeline-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .timeline-desc {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 3px;
+        }
+
+        /* Ses Kontrol Butonu */
+        .audio-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 50;
+            font-size: 20px;
+            border: 1px solid #eee;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 1. FULL EKRAN ZARF (YENİ TASARIM) -->
+    <div id="intro-screen">
+        <!-- Zarfın İçi -->
+        <div class="env-bg"></div>
+
+        <!-- Sol Kapak -->
+        <div class="flap-wrapper" style="z-index: 1;">
+            <div class="flap-shape left-shape"></div>
+        </div>
+
+        <!-- Sağ Kapak -->
+        <div class="flap-wrapper" style="z-index: 1;">
+            <div class="flap-shape right-shape"></div>
+        </div>
+
+        <!-- Alt Kapak -->
+        <div class="flap-wrapper" style="z-index: 2;">
+            <div class="flap-shape bottom-shape"></div>
+        </div>
+
+        <!-- Üst Kapak (Hareket Eden Kısım) -->
+        <div class="flap-wrapper" id="top-flap-wrapper" style="z-index: 3;">
+            <div class="flap-shape top-shape"></div>
+        </div>
+
+        <!-- Pembe Mum Mühür -->
+        <div class="seal" onclick="openAndProceed()">
+            <div class="seal-ring"></div>
+            <span>K&E</span>
+        </div>
+    </div>
+
+    <!-- 2. ASIL DAVETİYE İÇERİĞİ -->
+    <div id="main-page">
+
+        <!-- YENİ: Hero (Karşılama) Bölümü -->
+        <section class="hero">
+            <!-- Üstten sarkan zarif pembe/yeşil çiçek görseli (Şeffaf PNG) -->
+            <img src="images/topflower.png" alt="Üst Süsleme" class="floral-top">
+
+            <div class="hero-content">
+                <h1 class="hero-names">Kübra <span class="ampersand">&</span> Ege</h1>
+
+                <p class="hero-parents">YASEMİN & ABDULKERİM TUFAN <span class="dot">•</span> OYA & ERHAN TELLİ</p>
+
+                <div class="hero-divider">
+                    <!-- Zarif küçük bir ikon/ayraç -->
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                        </path>
+                    </svg>
+                </div>
+
+                <p class="hero-date">5 Temmuz 2026</p>
+
+                <p class="hero-invitation">
+                    Bu özel günümüzde mutluluğumuzu paylaşmak için<br>sizleri de aramızda görmekten onur duyarız.
+                </p>
+
+                <a href="#" class="hero-rsvp-btn">KATILIMINI ONAYLA</a>
+
+                <!-- Aşağı Kaydır Oku -->
+                <div class="hero-scroll-indicator">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- Geri Sayım Bölümü -->
+        <section class="countdown-section">
+            <h2 class="section-title">Geri Sayım</h2>
+            <p style="font-size: 11px; opacity: 0.8;">Büyük güne kalan süre</p>
+
+            <div class="countdown-grid">
+                <div class="countdown-item">
+                    <span class="countdown-number" id="days">00</span>
+                    <span class="countdown-label">Gün</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="hours">00</span>
+                    <span class="countdown-label">Saat</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="minutes">00</span>
+                    <span class="countdown-label">Dakika</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="seconds">00</span>
+                    <span class="countdown-label">Saniye</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hikayemiz (Carousel) -->
+        <section class="story-section">
+            <h2 class="section-title">Hikayemiz</h2>
+            <p class="story-text">Birlikte başladığımız bu güzel yolculukta, en özel günümüzde sizleri de yanımızda
+                görmekten mutluluk duyarız.</p>
+
+            <div class="carousel" id="photo-carousel">
+                <img src="images/foto3.jpeg"
+                    alt="Gelinlik ve Şemsiye Detay">
+                <img src="images/foto2.jpeg"
+                    alt="Düğün Konsepti">
+                <img src="images/foto1.jpeg"
+                    alt="Çift Fotoğrafı">
+            </div>
+        </section>
+
+        <!-- Lokasyon Bölümü -->
+        <section class="location-section">
+            <h2 class="section-title">Lokasyon</h2>
+            <p class="section-subtitle">Villa Marry Garden & Lounge</p>
+
+            <!-- KENDİ MEKAN RESMİNİ EKLE: src="images/mekan.jpg" -->
+            <img src="images/villamarry.jpeg" alt="Düğün Mekanı" class="venue-img">
+
+            <p style="font-size: 13px; color: var(--text-light); line-height: 1.6;">
+                Kızılcaşar, Incek Şht. Savcı Mehmet Selim Kiraz Blv No:317, 06770 <br>Gölbaşı/Ankara
+            </p>
+
+            <!-- Google Haritalar Linkini Buraya Ekle -->
+            <a href="https://www.google.com/maps/place/Villa+Marry+Garden+%26+Lounge/@39.8128486,32.709854,17z/data=!3m1!4b1!4m6!3m5!1s0x14d33fbd93c3056d:0x7a721f36ce56c86f!8m2!3d39.8128457!4d32.7116747!16s%2Fg%2F11kq7j0ql5?entry=ttu&g_ep=EgoyMDI2MDMxOC4xIKXMDSoASAFQAw%3D%3D"
+                target="_blank" class="map-btn">Haritada Aç</a>
+        </section>
+
+        <!-- Düğün Akışı -->
+        <section class="timeline-section">
+            <h2 class="section-title">Düğün Akışı</h2>
+            <p class="section-subtitle">Program Detayları</p>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-icon">🥂</div>
+                    <div class="timeline-time">19:00</div>
+                    <div class="timeline-title">Karşılama</div>
+                    <div class="timeline-desc">Hoşgeldiniz kokteyli ve müzik dinletisi.</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-icon">💍</div>
+                    <div class="timeline-time">19:45</div>
+                    <div class="timeline-title">Nikah</div>
+                    <div class="timeline-desc">Evet dediğimiz o özel an.</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-icon">🍽️</div>
+                    <div class="timeline-time">20:30</div>
+                    <div class="timeline-title">Yemek</div>
+                    <div class="timeline-desc">Açık büfe akşam yemeği servisi.</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-icon">🎵</div>
+                    <div class="timeline-time">21:30</div>
+                    <div class="timeline-title">Eğlence & Müzik</div>
+                    <div class="timeline-desc">Dans pistinde buluşuyoruz!</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-icon">🍰</div>
+                    <div class="timeline-time">23:00</div>
+                    <div class="timeline-title">Pasta Kesimi</div>
+                    <div class="timeline-desc">Tatlı bir kapanış.</div>
+                </div>
+            </div>
+
+            <!-- Alt Çiçek Süslemesi -->
+            <img src="images/bottom-flowers.png" alt="Alt Süsleme"
+                style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin-top: 40px;">
+        </section>
+
+    </div>
+
+    <!-- Sağ Alt Müzik / Ses İkonu -->
+    <div class="audio-btn" onclick="toggleAudio()">
+        <span id="audio-icon">🔊</span>
+    </div>
+
+    <script>
+        /* --- 1. Full Ekran Zarf ve Geçiş Animasyonu --- */
+        function openAndProceed() {
+            const introScreen = document.getElementById('intro-screen');
+            const mainPage = document.getElementById('main-page');
+
+            introScreen.classList.add('open-env');
+
+            setTimeout(() => {
+                mainPage.style.display = 'block';
+                introScreen.style.opacity = '0';
+
+                setTimeout(() => {
+                    mainPage.style.opacity = '1';
+                    document.body.style.overflow = 'auto';
+
+                    setTimeout(() => {
+                        introScreen.style.display = 'none';
+                    }, 1200);
+                }, 50);
+            }, 900);
+        }
+
+        /* --- 2. Geri Sayım Sayacı --- */
+        const countDownDate = new Date("Jul 5, 2026 19:00:00").getTime();
+
+        const x = setInterval(function () {
+            const now = new Date().getTime();
+            const distance = countDownDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerHTML = days < 10 ? "0" + days : days;
+            document.getElementById("hours").innerHTML = hours < 10 ? "0" + hours : hours;
+            document.getElementById("minutes").innerHTML = minutes < 10 ? "0" + minutes : minutes;
+            document.getElementById("seconds").innerHTML = seconds < 10 ? "0" + seconds : seconds;
+
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("days").innerHTML = "00";
+                document.getElementById("hours").innerHTML = "00";
+                document.getElementById("minutes").innerHTML = "00";
+                document.getElementById("seconds").innerHTML = "00";
+            }
+        }, 1000);
+
+        /* --- 3. Ses Butonu Toggle --- */
+        let isPlaying = true;
+        function toggleAudio() {
+            const icon = document.getElementById('audio-icon');
+            if (isPlaying) {
+                icon.innerHTML = '🔇';
+                isPlaying = false;
+            } else {
+                icon.innerHTML = '🔊';
+                isPlaying = true;
+            }
+        }
+
+
+        const slider = document.getElementById('photo-carousel');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        slider.addEventListener('mousedown', (e) => {
+            isDown = true;
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+        });
+
+        slider.addEventListener('mouseleave', () => {
+            isDown = false;
+        });
+
+        slider.addEventListener('mouseup', () => {
+            isDown = false;
+        });
+
+        slider.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - slider.offsetLeft;
+            const walk = (x - startX) * 2; // Kaydırma hızını ayarlayabilirsin
+            slider.scrollLeft = scrollLeft - walk;
+        });
+    </script>
+</body>
+
+</html>
