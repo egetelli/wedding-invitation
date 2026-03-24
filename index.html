@@ -559,11 +559,11 @@
             margin-top: 3px;
         }
 
-        /* --- LCV FORMU (RSVP) --- */
+        /* --- LCV FORMU (RSVP) - MOBİL UYUMLU DÜZELTME --- */
         .rsvp-section {
             background-color: var(--card-bg);
             border-radius: 20px;
-            margin: 20px 20px;
+            margin: 0 20px;
             padding: 40px 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         }
@@ -576,7 +576,7 @@
             margin-top: 20px;
         }
 
-        .rsvp-form input,
+        .rsvp-form input[type="text"],
         .rsvp-form select {
             width: 100%;
             padding: 12px 15px;
@@ -589,23 +589,26 @@
             outline: none;
         }
 
-        .rsvp-form input:focus,
+        .rsvp-form input[type="text"]:focus,
         .rsvp-form select:focus {
             border-color: var(--gold);
         }
 
+        /* Radio Buttonların Mobilde Düzgün Durması İçin Alt Alta (Column) Yaptık */
         .radio-group {
             display: flex;
-            gap: 15px;
-            margin-top: 5px;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 8px;
         }
 
         .radio-label {
             font-size: 13px;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
             color: var(--text-main);
+            cursor: pointer;
         }
 
         .submit-btn {
@@ -677,10 +680,9 @@
 
 <body>
 
-    <!-- ARKA PLAN MÜZİĞİ -->
+    <!-- ARKA PLAN MÜZİĞİ - Zarif bir piyano müziği eklendi -->
     <audio id="bg-music" loop>
-        <source src="music.mp3" type="audio/mpeg">
-        <!-- Not: Kendi müziğini yüklemek için "music.mp3" yerine link koyabilirsin -->
+        <source src="music2.mp3" type="audio/mpeg">
     </audio>
 
     <!-- 1. FULL EKRAN ZARF (YENİ TASARIM) -->
@@ -711,7 +713,7 @@
 
         <!-- Hero (Karşılama) Bölümü -->
         <section class="hero fade-in">
-            <img src="images/topflowerr.png" alt="Üst Süsleme" class="floral-top">
+            <img src="images/topflower.png" alt="Üst Süsleme" class="floral-top">
 
             <div class="hero-content">
                 <h1 class="hero-names">Kübra <span class="ampersand">&</span> Ege</h1>
@@ -774,6 +776,9 @@
                 <img src="images/foto3.jpeg" alt="Gelinlik ve Şemsiye Detay">
                 <img src="images/foto2.jpeg" alt="Düğün Konsepti">
                 <img src="images/foto1.jpeg" alt="Çift Fotoğrafı">
+                <img src="images/foto4.jpeg" alt="Çift Fotoğrafı">
+                <img src="images/foto5.jpeg" alt="Çift Fotoğrafı">
+                <img src="images/foto6.jpeg" alt="Çift Fotoğrafı">
             </div>
             <p style="font-size: 10px; color: var(--text-light); margin-top: 10px;">(Büyütmek için fotoğrafa tıklayın)
             </p>
@@ -831,9 +836,6 @@
                     <div class="timeline-desc">Tatlı bir kapanış.</div>
                 </div>
             </div>
-
-            <img src="images/bottom-flowers.png" alt="Alt Süsleme"
-                style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin-top: 40px;">
         </section>
 
         <!-- LCV (KATILIM ONAYI) BÖLÜMÜ -->
