@@ -1,59 +1,80 @@
-# Kübra & Ege Düğün Web Sitesi
+# 💌 Kübra & Ege Düğün Web Sitesi
 
-Bu proje, **Kübra & Ege** düğünü için hazırlanmış interaktif bir davetiye ve RSVP web sitesidir.  
+Bu proje, **Kübra & Ege** düğünü için hazırlanmış interaktif davetiye ve RSVP web sitesidir.  
+Renkli, animasyonlu ve kullanıcı dostu tasarımı ile misafirlerinizi etkileyecek bir deneyim sunar.  
 
-## Özellikler
+---
 
-1. **Yükleme Ekranı**  
-   - Açılışta animasyonlu loader ve isimler gösterilir.
+## 🎨 Özellikler
 
-2. **Arka Plan Müziği**  
-   - Otomatik döngü ile çalacak bir müzik alanı (`music2.mp3`).
+### 🖼️ Yükleme Ekranı
+- Açılışta animasyonlu loader ve çift isimleri.
+- Kusursuz bir başlangıç için tüm içerik yüklenene kadar ekranı kaplar.
 
-3. **Hero Bölümü**  
-   - Çift isimleri, aileler, tarih ve davet mesajı.
-   - "Katılımını Onayla" butonu ile RSVP bölümüne kaydırma.
+### 🎵 Arka Plan Müziği
+- Döngüsel çalan müzik (`music2.mp3`) ile siteye canlılık katar.
+- Müzik aç/kapat butonu ile kontrol edilebilir.
 
-4. **Geri Sayım Bölümü**  
-   - Büyük güne kalan süreyi gün, saat, dakika ve saniye olarak gösterir.
-   - Google Calendar bağlantısı ile etkinliği takvime ekleme.
+### 👰🤵 Hero Bölümü
+- Çift isimleri ve aileler gösterilir.
+- Davet mesajı ve "Katılımını Onayla" butonu ile RSVP bölümüne kaydırma.
 
-5. **Hikayemiz / Carousel**  
-   - Düğün hikayesi ve fotoğraf galerisi (carousel).
+### ⏳ Geri Sayım
+- Büyük güne kalan süreyi gösterir (Gün / Saat / Dakika / Saniye).
+- Google Calendar bağlantısı ile etkinliği takvime ekleme.
 
-6. **Lokasyon Bölümü**  
-   - Mekan bilgisi ve Google Maps bağlantısı.
+### 📸 Hikayemiz / Carousel
+- Düğün hikayesi ve fotoğraf galerisi.
+- Fotoğraflar tıklanabilir ve büyütülebilir.
 
-7. **Düğün Akışı**  
-   - Etkinlik saatleri ve detayları (karşılama, nikah, yemek, eğlence, pasta).
+### 📍 Lokasyon
+- Düğün mekânı bilgisi ve harita bağlantısı (Google Maps).
 
-8. **Anı Paylaşım Bölümü**  
-   - Google Drive üzerinden fotoğraf ve video yükleme.
+### 🗓️ Düğün Akışı
+- Etkinlik saatleri ve detayları:  
+  🥂 Karşılama | 💍 Nikah | 🍽️ Yemek | 🎵 Eğlence & Müzik | 🍰 Pasta Kesimi
 
-9. **RSVP (Katılım Onayı) & Dilek Defteri**  
-   - İsim, katılım durumu, kişi sayısı, misafir isimleri ve not bırakma alanı.
-   - Dinamik misafir inputları kişi sayısına göre açılır.
-   - Gönderim sonrası teşekkür mesajı ve formu resetleme seçeneği.
-   - Google Forms ile veri gönderimi.
+### 📷 Anı Paylaşımı
+- Google Drive üzerinden fotoğraf ve video yükleme imkânı.
+- Misafirleriniz anılarını paylaşabilir.
 
-10. **Sabit Butonlar**  
-    - WhatsApp ile davetiye paylaşma.
-    - Dark Mode toggle.
-    - Arka plan müziğini aç/kapat toggle.
+### ✉️ RSVP (Katılım Onayı) & Dilek Defteri
+- Ad, soyad, katılım durumu, kişi sayısı, misafir isimleri ve not bırakma alanı.
+- Dinamik misafir inputları, kişi sayısına göre açılır.
+- Gönderim sonrası teşekkür mesajı gösterilir.
+- Form verileri Google Forms ile alınır.
+- Yanıtı güncellemek için resetleme butonu mevcut.
 
-## Kullanım
+### 🔘 Sabit Butonlar
+- 📱 WhatsApp ile davetiye paylaşımı.
+- 🌙 Dark Mode toggle.
+- 🔇 Arka plan müziği aç/kapat toggle.
 
-- `index.html` dosyasını tarayıcıda açarak görüntüleyebilirsiniz.  
-- Müzik dosyasını (`music2.mp3`) ve görselleri `images/` klasöründe bulundurmanız gerekir.  
-- RSVP formu gönderimleri Google Forms üzerinden alınır.  
+---
 
-## Gereksinimler
+## 🛠️ Kullanım
 
-- Modern bir web tarayıcısı (Chrome, Edge, Firefox vb.).  
-- İnternet bağlantısı (Google Forms ve Google Drive bağlantıları için).  
+1. `index.html` dosyasını tarayıcıda açın.  
+2. `music2.mp3` ve tüm görsellerin `images/` klasöründe olduğundan emin olun.  
+3. RSVP formu gönderimleri Google Forms üzerinden alınır.  
+4. Misafir inputları sadece kişi sayısı seçildikten sonra açılır.  
+5. Resetleme butonu formu temizler ve misafir inputlarını kapatır.
 
-## Notlar
+---
 
-- Form gönderimi `fetch` ve `no-cors` ile Google Forms’a yapılmaktadır.  
-- Misafir inputları sadece kişi sayısı seçildikten sonra açılır.  
-- Resetleme butonu formu temizler ve misafir inputlarını kapatır. 
+## ⚡ Gereksinimler
+
+- Modern web tarayıcısı (Chrome, Edge, Firefox vb.)  
+- İnternet bağlantısı (Google Forms ve Google Drive için)
+
+---
+
+## 💡 Notlar
+
+- Form gönderimi `fetch` ve `no-cors` ile yapılır.  
+- Site tamamen responsive ve mobil uyumludur.  
+- Animasyonlar CSS ile sağlanır, kullanıcı deneyimi odaklıdır.
+
+---
+
+💖 Hazırlayan: Kübra & Ege | 5 Temmuz 2026  
