@@ -1492,6 +1492,18 @@
         const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${event.startDate}/${event.endDate}&details=${encodeURIComponent(event.details)}&location=${encodeURIComponent(event.location)}&sf=true&output=xml`;
 
         calendarBtn.href = gCalUrl;
+
+        const bgMusic = document.getElementById("bg-music");
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+                // Sekme arka plana geçince müziği durdur
+                bgMusic.pause();
+            } else {
+                // Sekmeye geri gelince opsiyonel: tekrar çal
+                bgMusic.play();
+            }
+        });
     </script>
 </body>
 
