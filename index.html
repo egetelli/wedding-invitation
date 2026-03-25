@@ -850,6 +850,76 @@
             border: none;
             font-size: 24px;
         }
+
+        .calendar-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            /* İkon ve metin arası boşluk */
+            padding: 12px 24px;
+            background-color: rgba(255, 255, 255, 0.1);
+            /* Hafif şeffaf beyaz arka plan */
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            /* İnce zarif çerçeve */
+            border-radius: 50px;
+            /* Tam yuvarlak köşeler */
+            text-decoration: none;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 30px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(5px);
+            /* Cam efekti (Glassmorphism) */
+        }
+
+        .calendar-btn:hover {
+            background-color: #C5A059;
+            /* Senin gold rengin */
+            border-color: #C5A059;
+            color: #ffffff;
+            transform: translateY(-3px);
+            /* Hafif yukarı kalkma */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            /* Derinlik gölgesi */
+        }
+
+        /* Buton içindeki ikon boyutu */
+        .calendar-btn svg,
+        .calendar-btn span {
+            font-size: 16px;
+        }
+
+        /* Yanıtı Güncelle Linki */
+        .reset-form-link {
+            font-size: 11px;
+            color: #2e7d32;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .reset-form-link:hover {
+            opacity: 0.7;
+        }
+
+        /* Gece modunda yeşil rengin karanlıkta da okunabilmesi için ufak bir ayar */
+        body.dark-mode #rsvp-success {
+            background-color: rgba(46, 125, 50, 0.2);
+            border-color: rgba(46, 125, 50, 0.5);
+            color: #a5d6a7;
+        }
+
+        body.dark-mode .reset-form-link {
+            color: #a5d6a7;
+        }
     </style>
 </head>
 
@@ -944,6 +1014,18 @@
                 <div class="countdown-item"><span class="countdown-number" id="seconds">00</span><span
                         class="countdown-label">Saniye</span></div>
             </div>
+
+            <a id="add-calendar" class="calendar-btn" target="_blank"
+                href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Kübra+ve+Ege+Düğün&dates=20260705T160000Z/20260705T200000Z&details=Düğünümüze+davetlisiniz!&location=Villa+Marry+Garden,+Gölbaşı,+Ankara">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                Takvime Ekle
+            </a>
         </section>
 
         <!-- Hikayemiz (Carousel) -->
@@ -1084,7 +1166,13 @@
 
                 <button type="submit" class="submit-btn">Gönder</button>
             </form>
-            <div id="rsvp-success">Teşekkürler! Yanıtınız ve güzel dilekleriniz bize ulaştı. 🤍</div>
+            <div id="rsvp-success">
+                Teşekkürler! Yanıtınız ve güzel dilekleriniz bize ulaştı. 🤍
+                <div style="margin-top: 12px;">
+                    <a href="javascript:void(0)" onclick="resetRSVP()" class="reset-form-link">Fikrinizi mi
+                        değiştirdiniz? Yanıtı Güncelle</a>
+                </div>
+            </div>
         </section>
 
     </div>
@@ -1106,9 +1194,6 @@
         <!-- Müzik Toggle -->
         <div class="float-btn" onclick="toggleAudio()"><span id="audio-icon">🔇</span></div>
     </div>
-
-    <!-- Kopyalama İçin Toast Uyarı Ekranı -->
-    <div id="toast">IBAN Başarıyla Kopyalandı! ✔️</div>
 
     <script>
         /* --- 0. YÜKLEME EKRANI (LOADER) KONTROLÜ --- */
@@ -1160,7 +1245,9 @@
 
                 setTimeout(() => {
                     mainPage.style.opacity = '1';
-                    document.body.style.overflow = 'auto';
+                    // SADECE BURASI DEĞİŞTİ: auto yerine daha stabil olan scroll kullanıldı
+                    document.body.style.overflowY = 'scroll';
+                    document.body.style.overflowX = 'hidden';
 
                     setTimeout(() => {
                         introScreen.style.display = 'none';
@@ -1326,6 +1413,13 @@
             e.preventDefault();
 
             const form = e.target;
+            const submitBtn = form.querySelector('.submit-btn');
+
+            // YENİ: Kullanıcıya formun işlendiğini hissettir
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = "GÖNDERİLİYOR...";
+            submitBtn.style.opacity = "0.7";
+            submitBtn.disabled = true;
 
             const name = form.querySelector('input[type="text"]').value.trim();
             const status = form.querySelector('input[name="status"]:checked')?.value;
@@ -1335,7 +1429,6 @@
             const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLScQRXCAATl3V2_S6NQinRbkqx5tHWaRlPRBurcgBpoJvXEKTA/formResponse";
 
             const data = new FormData();
-
             data.append("entry.1429548343", name);
             data.append("entry.1591488209", status);
             data.append("entry.378324609", count);
@@ -1345,13 +1438,60 @@
                 method: "POST",
                 mode: "no-cors",
                 body: data
-            });
+            }).then(() => {
+                // YENİ: İşlem bittikten sonra (yaklaşık yarım saniye sürer) formu gizle
+                setTimeout(() => {
+                    form.reset();
+                    form.style.display = "none";
 
-            // UX iyileştirme
-            form.reset();
-            form.style.display = "none";
-            document.getElementById("rsvp-success").style.display = "block";
+                    // Başarı mesajını zarifçe göster
+                    const successDiv = document.getElementById("rsvp-success");
+                    successDiv.style.display = "block";
+                    successDiv.style.opacity = "0";
+                    setTimeout(() => { successDiv.style.transition = "opacity 0.5s"; successDiv.style.opacity = "1"; }, 50);
+                }, 600);
+            }).catch((error) => {
+                console.error('Hata:', error);
+                submitBtn.innerHTML = "HATA OLUŞTU, TEKRAR DENEYİN";
+                submitBtn.style.opacity = "1";
+                submitBtn.disabled = false;
+            });
         }
+
+        /* --- 8. LCV FORMU GERİ GETİRME --- */
+        function resetRSVP() {
+            const form = document.querySelector('.rsvp-form');
+            const successDiv = document.getElementById('rsvp-success');
+            const submitBtn = form.querySelector('.submit-btn');
+
+            // Başarı mesajını gizle
+            successDiv.style.display = "none";
+            successDiv.style.opacity = "0";
+
+            // Formu geri getir
+            form.style.display = "flex";
+
+            // Butonu eski haline çevir
+            submitBtn.innerHTML = "GÖNDER";
+            submitBtn.style.opacity = "1";
+            submitBtn.disabled = false;
+        }
+
+        //9. TAKVİME EKLEME (Google Calendar Linki)
+        const calendarBtn = document.getElementById("add-calendar");
+
+        const event = {
+            title: "Kübra & Ege Düğünü",
+            startDate: "20260705T190000", // YYYYMMDDTHHMMSS format
+            endDate: "20260705T230000",
+            details: "Bu özel günümüzde mutluluğumuzu paylaşmak için davetlisiniz!",
+            location: "Villa Marry Garden & Lounge, Gölbaşı/Ankara"
+        };
+
+        // Google Calendar URL'i tek satırda oluştur
+        const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${event.startDate}/${event.endDate}&details=${encodeURIComponent(event.details)}&location=${encodeURIComponent(event.location)}&sf=true&output=xml`;
+
+        calendarBtn.href = gCalUrl;
     </script>
 </body>
 
