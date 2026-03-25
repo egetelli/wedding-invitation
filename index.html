@@ -1148,14 +1148,17 @@
 
                 <div>
                     <label style="font-size:11px; color:var(--text-light); margin-top:10px;">Kişi Sayısı</label>
-                    <select>
-                        <option>1 kişi (Sadece ben)</option>
-                        <option>2 kişi</option>
-                        <option>3 kişi</option>
-                        <option>4 kişi</option>
-                        <option>5 veya daha fazla</option>
+                    <select id="guest-count">
+                        <option value="1">1 kişi (Sadece ben)</option>
+                        <option value="2">2 kişi</option>
+                        <option value="3">3 kişi</option>
+                        <option value="4">4 kişi</option>
+                        <option value="5">5 veya daha fazla</option>
                     </select>
                 </div>
+
+                <!-- Dinamik isim alanları buraya eklenecek -->
+                <div id="guest-names-container"></div>
 
                 <!-- YENİ: Anı Defteri / Not Ekleme Alanı -->
                 <div>
@@ -1411,58 +1414,102 @@
         /* --- 7. LCV GÖNDERİM --- */
         function submitRSVP(e) {
             e.preventDefault();
-
             const form = e.target;
             const submitBtn = form.querySelector('.submit-btn');
 
-            // YENİ: Kullanıcıya formun işlendiğini hissettir
+            // --- Buton animasyonu ve disable ---
             const originalBtnText = submitBtn.innerHTML;
             submitBtn.innerHTML = "GÖNDERİLİYOR...";
             submitBtn.style.opacity = "0.7";
             submitBtn.disabled = true;
 
-            const name = form.querySelector('input[type="text"]').value.trim();
+            const name = form.querySelector('input[type="text"]').value.trim(); // ana kişi
             const status = form.querySelector('input[name="status"]:checked')?.value;
-            const count = form.querySelector('select').value;
+            const select = form.querySelector('select');
+            const countText = select.selectedOptions[0].text; // seçilen text’i al
             const note = form.querySelector('textarea').value.trim();
 
+            // Misafir isimlerini birleştir
+            const guestInputs = form.querySelectorAll('#guest-names-container input');
+            const guestNames = Array.from(guestInputs)
+                .map(input => input.value.trim())
+                .filter(v => v)
+                .join(", ");
+
+            // Google Form entry ID’leri
             const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLScQRXCAATl3V2_S6NQinRbkqx5tHWaRlPRBurcgBpoJvXEKTA/formResponse";
 
             const data = new FormData();
-            data.append("entry.1429548343", name);
-            data.append("entry.1591488209", status);
-            data.append("entry.378324609", count);
-            data.append("entry.306565714", note);
+            data.append("entry.1429548343", name);        // ana kişi
+            data.append("entry.1591488209", status);      // katılım durumu
+            data.append("entry.378324609", countText);    // kişi sayısı
+            data.append("entry.306565714", note);         // not
+            data.append("entry.1194056671", guestNames);  // misafir isimleri
+
+            console.log("NAME:", name);
+            console.log("STATUS:", status);
+            console.log("COUNT:", countText);
+            console.log("NOTE:", note);
+            console.log("GUESTS:", guestNames);
 
             fetch(formUrl, {
                 method: "POST",
                 mode: "no-cors",
                 body: data
             }).then(() => {
-                // YENİ: İşlem bittikten sonra (yaklaşık yarım saniye sürer) formu gizle
+                // Başarılı gönderim sonrası
                 setTimeout(() => {
                     form.reset();
                     form.style.display = "none";
 
-                    // Başarı mesajını zarifçe göster
                     const successDiv = document.getElementById("rsvp-success");
                     successDiv.style.display = "block";
                     successDiv.style.opacity = "0";
-                    setTimeout(() => { successDiv.style.transition = "opacity 0.5s"; successDiv.style.opacity = "1"; }, 50);
+                    setTimeout(() => {
+                        successDiv.style.transition = "opacity 0.5s";
+                        successDiv.style.opacity = "1";
+                    }, 50);
+
+                    // Butonu eski haline getir
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.style.opacity = "1";
+                    submitBtn.disabled = false;
+
                 }, 600);
             }).catch((error) => {
                 console.error('Hata:', error);
+
+                // Hata durumunda butonu geri al
                 submitBtn.innerHTML = "HATA OLUŞTU, TEKRAR DENEYİN";
                 submitBtn.style.opacity = "1";
                 submitBtn.disabled = false;
             });
         }
 
+        const guestCountSelect = document.getElementById("guest-count");
+        const guestNamesContainer = document.getElementById("guest-names-container");
+
+        guestCountSelect.addEventListener("change", () => {
+            const count = parseInt(guestCountSelect.value);
+            guestNamesContainer.innerHTML = ""; // önce temizle
+
+            for (let i = 1; i < count; i++) { // 1 kişi zaten ana isim alanında var
+                const div = document.createElement("div");
+                div.style.marginTop = "8px";
+                div.innerHTML = `
+            <label style="font-size:11px; color:var(--text-light);">Misafir ${i} Adı ve Soyadı</label>
+            <input type="text" placeholder="Örn: Ahmet Yılmaz">
+        `;
+                guestNamesContainer.appendChild(div);
+            }
+        });
+
         /* --- 8. LCV FORMU GERİ GETİRME --- */
         function resetRSVP() {
             const form = document.querySelector('.rsvp-form');
             const successDiv = document.getElementById('rsvp-success');
             const submitBtn = form.querySelector('.submit-btn');
+            const guestContainer = document.getElementById('guest-names-container');
 
             // Başarı mesajını gizle
             successDiv.style.display = "none";
@@ -1475,6 +1522,9 @@
             submitBtn.innerHTML = "GÖNDER";
             submitBtn.style.opacity = "1";
             submitBtn.disabled = false;
+
+            // Misafir inputlarını temizle ve gizle
+            guestContainer.innerHTML = "";
         }
 
         //9. TAKVİME EKLEME (Google Calendar Linki)
