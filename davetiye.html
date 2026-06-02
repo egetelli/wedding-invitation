@@ -457,6 +457,42 @@
             height: 20px;
         }
 
+        /* --- MOBİL EKRAN UYARLAMASI (@media) --- */
+        @media (max-width: 767px) {
+
+            /* Mobilde çerçevenin çiçeklerine çarpmamak için sağ/sol boşluğu artırıyoruz */
+            .hero-content {
+                padding: 0 55px;
+            }
+
+            /* İsimleri mobilde çerçevenin dışına taşmayacak şekilde küçültüyoruz */
+            .hero-names {
+                font-size: 38px;
+                margin-bottom: 8px;
+            }
+
+            .hero-names .ampersand {
+                font-size: 26px;
+            }
+
+            /* Aile isimleri mobilde tek satıra sığsın diye 1 tık ufaltıldı */
+            .hero-parents {
+                font-size: 8px;
+            }
+
+            .hero-date {
+                font-size: 14px;
+                margin-bottom: 12px;
+            }
+
+            /* Davet metni mobilde çiçeklerin altında kalmasın diye genişliği daraltıldı */
+            .hero-invitation {
+                font-size: 10.5px;
+                max-width: 250px;
+                margin-bottom: 20px;
+            }
+        }
+
         @keyframes bounce {
 
             0%,
@@ -1177,8 +1213,9 @@
 
                 <div>
                     <label style="font-size:11px; color:var(--text-light); margin-top:10px;">Kişi Sayısı</label>
-                    <select id="guest-count" disabled style="background-color: #f5f5f5; cursor: not-allowed;">
+                    <select id="guest-count">
                         <option value="1">1 kişi (Sadece ben)</option>
+                        <option value="2">2 kişi</option>
                     </select>
                 </div>
 
