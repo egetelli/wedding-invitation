@@ -11,6 +11,12 @@
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap"
         rel="stylesheet">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Montserrat:wght@300;400;500;600&family=Viaoda+Libre&display=swap"
+        rel="stylesheet">
+
     <style>
         /* --- GENEL & TEMA AYARLARI --- */
         :root {
@@ -256,6 +262,34 @@
             margin-bottom: 30px;
         }
 
+        /* --- YETİŞKİNLERE ÖZEL UYARISI --- */
+        .adults-only-warning {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            /* Kalın harf (Bold) */
+            color: #902c2c;
+            /* Zarif ve dikkat çekici bir bordo */
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 30px;
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: rgba(144, 44, 44, 0.05);
+            /* Hafif kırmızımsı arkaplan */
+            border: 1px solid rgba(144, 44, 44, 0.3);
+            /* İnce bir çerçeve */
+            border-radius: 20px;
+            /* Yumuşak köşeli etiket görünümü */
+        }
+
+        /* Gece modunda da parlaması ve okunması için uyarlama */
+        body.dark-mode .adults-only-warning {
+            color: #e57373;
+            background-color: rgba(229, 115, 115, 0.1);
+            border-color: rgba(229, 115, 115, 0.4);
+        }
+
         .fade-in {
             opacity: 0;
             transform: translateY(30px);
@@ -267,7 +301,7 @@
             transform: translateY(0);
         }
 
-        /* --- HERO BÖLÜMÜ --- */
+        /* --- HERO BÖLÜMÜ GÜNCEL VE DÜZELTİLMİŞ --- */
         .hero {
             position: relative;
             min-height: 100vh;
@@ -280,104 +314,122 @@
             background-color: var(--bg-color);
         }
 
-        .floral-top {
+        /* Çerçevenin tam oturması ve yazıları sıkıştırmaması için */
+        .hero-frame {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: auto;
-            max-height: 35vh;
-            object-fit: contain;
-            object-position: top center;
+            height: 100%;
+            object-fit: fill;
             z-index: 0;
-            opacity: 0.95;
-            transform: scale(1.05);
+            pointer-events: none;
         }
 
-        .floral-bottom {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: auto;
-            max-height: 25vh;
-            object-fit: contain;
-            object-position: bottom center;
-            z-index: 0;
-            opacity: 0.8;
-            transform: rotate(180deg) scale(1.05);
-        }
-
+        /* Üst taşıyıcı kutunun sağ-sol iç payını biraz gevşetiyoruz ki metin rahat yayılsın */
         .hero-content {
             position: relative;
             z-index: 1;
             text-align: center;
             width: 100%;
-            padding: 0 20px;
-            margin-top: 5vh;
+            padding: 0 25px;
+            /* 45px olan payı 25px'e çekerek metne ekstra alan kazandırdık */
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
+        /* İsimler: Çerçevenin üst sınırını aşmaması için boyutu optimize edildi */
         .hero-names {
-            font-family: 'Playfair Display', serif;
+            /* KÜBRA & EGE yazısı için Viaoda Libre */
+            font-family: 'Viaoda Libre', serif;
             font-size: 52px;
             font-weight: 400;
             color: var(--text-main);
             margin: 0 0 10px 0;
-            letter-spacing: -1px;
-            transition: color 0.5s;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
         }
 
         .hero-names .ampersand {
+            /* & işareti Bodoni Moda İtalik */
+            font-family: 'Bodoni Moda', serif;
+            font-optical-sizing: auto;
+            /* Tarayıcının fontu doğru çizmesi için zorunlu ayar */
             font-size: 32px;
             font-style: italic;
-            color: var(--text-light);
-            margin: 0 5px;
+            color: var(--text-main);
+            margin: 0 6px;
             vertical-align: middle;
         }
 
         .hero-parents {
-            font-family: 'Montserrat', sans-serif;
+            /* Aile İsimleri */
+            font-family: 'Bodoni Moda', serif;
+            font-optical-sizing: auto;
             font-size: 9px;
+            font-weight: 600;
+            /* Fontun netleşmesi için ağırlık belirttik */
             color: var(--text-light);
-            letter-spacing: 2.5px;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
-            margin: 0 0 25px 0;
+            margin: 0 0 12px 0;
+            line-height: 1.5;
         }
 
         .hero-parents .dot {
-            margin: 0 8px;
+            margin: 0 4px;
             color: var(--gold);
         }
 
+        /* Kalp İkonu Bölücü */
         .hero-divider {
-            margin: 20px 0;
+            margin: 10px 0;
             color: var(--gold);
-            opacity: 0.8;
+            opacity: 0.7;
         }
 
+        .hero-divider svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Tarih Bölümü */
         .hero-date {
-            font-size: 14px;
-            letter-spacing: 4px;
+            /* Tarih */
+            font-family: 'Bodoni Moda', serif;
+            font-optical-sizing: auto;
+            font-size: 16px;
+            letter-spacing: 2px;
             color: var(--text-main);
-            font-weight: 500;
-            margin-bottom: 25px;
+            font-weight: 700;
+            margin: 0 0 15px 0;
         }
 
         .hero-invitation {
-            font-family: 'Playfair Display', serif;
-            font-size: 14px;
+            /* Davet Metni */
+            font-family: 'Bodoni Moda', serif;
+            font-optical-sizing: auto;
+            font-size: 11px;
             line-height: 1.8;
             color: var(--text-light);
             font-style: italic;
-            max-width: 320px;
-            margin: 0 auto 40px auto;
+            /* Bodoni Moda'nın muazzam italik yapısını aktarır */
+            width: 90%;
+            max-width: 340px;
+            letter-spacing: -0.2px;
+            margin: 0 auto 25px auto;
+            word-break: keep-all;
         }
 
+        /* Katılımını Onayla Butonu */
         .hero-rsvp-btn {
             display: inline-block;
             font-family: 'Montserrat', sans-serif;
-            font-size: 10px;
-            letter-spacing: 2px;
+            font-size: 9px;
+            letter-spacing: 1.5px;
             color: var(--text-main);
             text-decoration: none;
             text-transform: uppercase;
@@ -385,13 +437,24 @@
             border-bottom: 1px solid var(--text-main);
             padding-bottom: 3px;
             transition: opacity 0.3s;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
         }
 
+        .hero-rsvp-btn:hover {
+            opacity: 0.6;
+        }
+
+        /* Aşağı Kaydır Oku: Butonun üstüne binmemesi için pay bırakıldı */
         .hero-scroll-indicator {
-            margin-top: 25px;
+            margin-top: 20px;
             color: var(--text-light);
+            opacity: 0.6;
             animation: bounce 2s infinite;
+        }
+
+        .hero-scroll-indicator svg {
+            width: 20px;
+            height: 20px;
         }
 
         @keyframes bounce {
@@ -465,55 +528,54 @@
             color: rgba(255, 255, 255, 0.7);
         }
 
-        /* --- HİKAYEMİZ & CAROUSEL --- */
+        /* --- HİKAYEMİZ & TEK FOTOĞRAF DÜZENİ --- */
         .story-section {
             background-color: var(--card-bg);
             padding-top: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* İçindeki tüm elementleri yatayda ortalar */
         }
 
         .story-text {
             font-size: 13px;
             line-height: 1.8;
             color: var(--text-light);
-            margin-bottom: 20px;
-            padding: 0 10px;
+            margin-bottom: 25px;
+            padding: 0 20px;
+            max-width: 400px;
+            /* Metnin mobilde çok yayılmasını önler */
+            text-align: center;
         }
 
-        .carousel {
+        /* Tekil fotoğrafı ortalayan ve şıklaştıran yeni taşıyıcı */
+        .single-photo-wrapper {
+            width: 100%;
             display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            gap: 15px;
-            padding: 20px;
-            scrollbar-width: none;
-            -webkit-overflow-scrolling: touch;
-            cursor: grab;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 0;
         }
 
-        .carousel:active {
-            cursor: grabbing;
-        }
-
-        .carousel::-webkit-scrollbar {
-            display: none;
-        }
-
-        .carousel img {
-            scroll-snap-align: center;
-            width: 240px;
-            height: 320px;
+        .single-photo-wrapper img {
+            width: 260px;
+            /* Tek fotoğraf olduğu için duruşunu biraz daha belirginleştirdik */
+            height: 350px;
             object-fit: cover;
             border-radius: 15px;
-            flex-shrink: 0;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            /* Hafif ve derinlik katan bir gölge */
             user-select: none;
             -webkit-user-drag: none;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .carousel img:hover {
+        .single-photo-wrapper img:hover {
             transform: scale(1.02);
+            /* Üzerine gelindiğinde veya dokunulduğunda çok hafif büyüme efekti */
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
         }
 
         /* --- LOKASYON --- */
@@ -964,7 +1026,7 @@
 
         <!-- Hero (Karşılama) Bölümü -->
         <section class="hero fade-in">
-            <img src="images/topflowerr.png" alt="Üst Süsleme" class="floral-top">
+            <img src="images/davetiyeweb.png" alt="Çerçeve" class="hero-frame" onerror="this.style.display='none'">
 
             <div class="hero-content">
                 <h1 class="hero-names">Kübra <span class="ampersand">&</span> Ege</h1>
@@ -982,13 +1044,14 @@
                     </svg>
                 </div>
 
-                <p class="hero-date">5 Temmuz 2026</p>
+                <p class="hero-date">05/07/2026</p>
 
                 <p class="hero-invitation">
-                    Bu özel günümüzde mutluluğumuzu paylaşmak için<br>sizleri de aramızda görmekten onur duyarız.
+                    Birlikteliğimizin en değerli anını kutlayacağımız bu özel günde<br>siz kıymetli yakınlarımızı
+                    aramızda görmekten mutluluk duyarız.
                 </p>
 
-                <a href="#rsvp-bolumu" class="hero-rsvp-btn">KATILIMINI ONAYLA</a>
+                <a href="#rsvp-bolumu" onclick="scrollToRSVP()" class="hero-rsvp-btn">KATILIMINI ONAYLA</a>
 
                 <div class="hero-scroll-indicator">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
@@ -1027,22 +1090,15 @@
             </a>
         </section>
 
-        <!-- Hikayemiz (Carousel) -->
+        <!-- Hikayemiz  -->
         <section class="story-section fade-in">
             <h2 class="section-title">Hikayemiz</h2>
             <p class="story-text">Birlikte başladığımız bu güzel yolculukta, en özel günümüzde sizleri de yanımızda
                 görmekten mutluluk duyarız.</p>
 
-            <div class="carousel" id="photo-carousel">
-                <img src="images/foto3.jpeg" alt="Gelinlik ve Şemsiye Detay">
-                <img src="images/foto2.jpeg" alt="Düğün Konsepti">
-                <img src="images/foto1.jpeg" alt="Çift Fotoğrafı">
-                <img src="images/foto4.jpeg" alt="Çift Fotoğrafı">
-                <img src="images/foto5.jpeg" alt="Çift Fotoğrafı">
-                <img src="images/foto6.jpeg" alt="Çift Fotoğrafı">
+            <div class="single-photo-wrapper">
+                <img src="images/foto3.jpeg" alt="Kübra & Ege">
             </div>
-            <p style="font-size: 10px; color: var(--text-light); margin-top: 10px;">(Büyütmek için fotoğrafa tıklayın)
-            </p>
         </section>
 
         <!-- Lokasyon Bölümü -->
@@ -1067,64 +1123,39 @@
 
             <div class="timeline">
                 <div class="timeline-item">
-                    <div class="timeline-icon">🥂</div>
+                    <div class="timeline-icon">✨</div>
                     <div class="timeline-time">19:00</div>
                     <div class="timeline-title">Karşılama</div>
-                    <div class="timeline-desc">Hoşgeldiniz kokteyli ve müzik dinletisi.</div>
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-icon">💍</div>
-                    <div class="timeline-time">19:45</div>
+                    <div class="timeline-time">20:00</div>
                     <div class="timeline-title">Nikah</div>
-                    <div class="timeline-desc">Evet dediğimiz o özel an.</div>
                 </div>
                 <div class="timeline-item">
-                    <div class="timeline-icon">🍽️</div>
-                    <div class="timeline-time">20:30</div>
-                    <div class="timeline-title">Yemek</div>
-                    <div class="timeline-desc">Açık büfe akşam yemeği servisi.</div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-icon">🎵</div>
-                    <div class="timeline-time">21:30</div>
-                    <div class="timeline-title">Eğlence & Müzik</div>
-                    <div class="timeline-desc">Dans pistinde buluşuyoruz!</div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-icon">🍰</div>
+                    <div class="timeline-icon">🔔</div>
                     <div class="timeline-time">23:00</div>
-                    <div class="timeline-title">Pasta Kesimi</div>
-                    <div class="timeline-desc">Tatlı bir kapanış.</div>
+                    <div class="timeline-title">Kapanış</div>
                 </div>
             </div>
         </section>
 
-        <!-- YENİ: ANI PAYLAŞIM BÖLÜMÜ (Google Drive) -->
-        <section class="memory-section fade-in">
-            <div class="memory-card">
-                <h2 class="section-title">Anılarınızı Paylaşın</h2>
-                <p class="section-subtitle">Bizim Gözümüzden Kaçanlar</p>
-                <p class="story-text" style="padding: 0; margin-bottom: 20px;">Düğünümüz boyunca çektiğiniz o güzel
-                    fotoğraf ve videoları bizimle paylaşarak anılarımızı ölümsüzleştirmemize yardımcı olabilirsiniz.</p>
-
-                <!-- href içerisine kendi Google Drive klasör linkini yapıştır -->
-                <a href="https://egetelli.github.io/wedding-shots/" target="_blank" class="upload-btn">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round"
-                        style="margin-right: 8px; vertical-align: middle;">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="17 8 12 3 7 8"></polyline>
-                        <line x1="12" y1="3" x2="12" y2="15"></line>
-                    </svg>
-                    Albüme Fotoğraf Ekle
-                </a>
-            </div>
-        </section>
 
         <!-- LCV (KATILIM ONAYI) & DİLEK AĞACI BÖLÜMÜ -->
         <section id="rsvp-bolumu" class="rsvp-section fade-in">
             <h2 class="section-title">Katılım Onayı</h2>
-            <p class="section-subtitle">Lütfen katılım durumunuzu bildirin</p>
+            <p class="section-subtitle" style="margin-bottom: 15px;">Lütfen katılım durumunuzu bildirin</p>
+
+            <div class="adults-only-warning">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round"
+                    style="margin-right: 4px; vertical-align: text-bottom;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                Davetimiz yetişkinlere özeldir
+            </div>
 
             <form class="rsvp-form" onsubmit="submitRSVP(event)">
                 <div>
@@ -1149,9 +1180,6 @@
                     <select id="guest-count">
                         <option value="1">1 kişi (Sadece ben)</option>
                         <option value="2">2 kişi</option>
-                        <option value="3">3 kişi</option>
-                        <option value="4">4 kişi</option>
-                        <option value="5">5 veya daha fazla</option>
                     </select>
                 </div>
 
@@ -1181,7 +1209,7 @@
     <!-- Sabit Butonlar Grubu -->
     <div class="floating-buttons">
         <!-- WhatsApp Paylaş -->
-        <a href="https://wa.me/?text=Düğünümüze davetlisiniz! Kübra & Ege - 5 Temmuz 2026" target="_blank"
+        <!-- <a href="https://wa.me/?text=Düğünümüze davetlisiniz! Kübra & Ege - 5 Temmuz 2026" target="_blank"
             class="float-btn whatsapp-btn">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
@@ -1189,7 +1217,7 @@
                     d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
                 </path>
             </svg>
-        </a>
+        </a> -->
         <!-- Dark Mode Toggle -->
         <div class="float-btn" onclick="toggleDarkMode()" id="theme-icon">🌙</div>
         <!-- Müzik Toggle -->
@@ -1363,29 +1391,10 @@
             }
         }
 
-        /* --- 5. CAROUSEL MOUSE DRAG --- */
-        const slider = document.getElementById('photo-carousel');
-        let isDown = false;
-        let startX;
-        let scrollLeft;
-
-        slider.addEventListener('mousedown', (e) => {
-            isDown = true;
-            startX = e.pageX - slider.offsetLeft;
-            scrollLeft = slider.scrollLeft;
-        });
-        slider.addEventListener('mouseleave', () => { isDown = false; });
-        slider.addEventListener('mouseup', () => { isDown = false; });
-        slider.addEventListener('mousemove', (e) => {
-            if (!isDown) return;
-            e.preventDefault();
-            const x = e.pageX - slider.offsetLeft;
-            const walk = (x - startX) * 2;
-            slider.scrollLeft = scrollLeft - walk;
-        });
-
         /* --- 6. GERİ SAYIM --- */
-        const countDownDate = new Date("Jul 5, 2026 19:00:00").getTime();
+        // Zaman dilimi karmaşasını önlemek ve sayacı canlandırmak için standart ISO formatı kullanıyoruz
+        const countDownDate = new Date("2026-07-05T19:00:00").getTime();
+
         const countdownTimer = setInterval(function () {
             const now = new Date().getTime();
             const distance = countDownDate - now;
@@ -1395,10 +1404,13 @@
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            document.getElementById("days").innerHTML = days < 10 ? "0" + days : days;
-            document.getElementById("hours").innerHTML = hours < 10 ? "0" + hours : hours;
-            document.getElementById("minutes").innerHTML = minutes < 10 ? "0" + minutes : minutes;
-            document.getElementById("seconds").innerHTML = seconds < 10 ? "0" + seconds : seconds;
+            // Değerleri ekrana basmadan önce elementlerin varlığını kontrol etmek hata oluşmasını engeller
+            if (document.getElementById("days")) {
+                document.getElementById("days").innerHTML = days < 10 ? "0" + days : days;
+                document.getElementById("hours").innerHTML = hours < 10 ? "0" + hours : hours;
+                document.getElementById("minutes").innerHTML = minutes < 10 ? "0" + minutes : minutes;
+                document.getElementById("seconds").innerHTML = seconds < 10 ? "0" + seconds : seconds;
+            }
 
             if (distance < 0) {
                 clearInterval(countdownTimer);
