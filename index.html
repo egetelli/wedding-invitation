@@ -203,6 +203,55 @@
             transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
+        /* --- YENİ: MÜHÜR YÖNLENDİRME YAZISI (AÇMAK İÇİN DOKUNUN) --- */
+        .click-hint {
+            position: absolute;
+            top: calc(50% + 75px);
+            /* Mührün hemen altında durması için ayarlandı */
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            color: var(--gold);
+            /* Davetiyenin lüks altın rengi */
+            font-family: 'Montserrat', sans-serif;
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            z-index: 10;
+            cursor: pointer;
+            opacity: 0.8;
+            animation: sealArrowBounce 2s infinite ease-in-out;
+            transition: opacity 0.5s ease;
+        }
+
+        .click-hint svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Oka ve yazıya yukarı doğru yumuşakça vurma/zıplama efekti */
+        @keyframes sealArrowBounce {
+
+            0%,
+            100% {
+                transform: translate(-50%, 0);
+            }
+
+            50% {
+                transform: translate(-50%, -6px);
+            }
+        }
+
+        /* Zarf açılırken yazının da mühür gibi görünmez olması için */
+        #intro-screen.open-env .click-hint {
+            opacity: 0;
+            pointer-events: none;
+        }
+
         .seal-ring {
             position: absolute;
             inset: 6px;
@@ -345,7 +394,7 @@
         .hero-names {
             /* KÜBRA & EGE yazısı için Viaoda Libre */
             font-family: 'Viaoda Libre', serif;
-            font-size: 52px;
+            font-size: 44px;
             font-weight: 400;
             color: var(--text-main);
             margin: 0 0 10px 0;
@@ -358,7 +407,7 @@
             font-family: 'Bodoni Moda', serif;
             font-optical-sizing: auto;
             /* Tarayıcının fontu doğru çizmesi için zorunlu ayar */
-            font-size: 32px;
+            font-size: 28px;
             font-style: italic;
             color: var(--text-main);
             margin: 0 6px;
@@ -412,7 +461,7 @@
             /* Davet Metni */
             font-family: 'Bodoni Moda', serif;
             font-optical-sizing: auto;
-            font-size: 11px;
+            font-size: 8px;
             line-height: 1.8;
             color: var(--text-light);
             font-style: italic;
@@ -1014,10 +1063,18 @@
             <div class="flap-shape top-shape"></div>
         </div>
 
-        <!-- Mühür -->
         <div class="seal" onclick="openAndProceed()">
             <div class="seal-ring"></div>
             <span>K&E</span>
+        </div>
+
+        <div class="click-hint" onclick="openAndProceed()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="17 11 12 6 7 11"></polyline>
+                <polyline points="17 18 12 13 7 18"></polyline>
+            </svg>
+            <span>Açmak İçin Dokunun</span>
         </div>
     </div>
 
@@ -1176,7 +1233,6 @@
                 </div>
 
                 <div>
-                    <label style="font-size:11px; color:var(--text-light); margin-top:10px;">Kişi Sayısı</label>
                     <select id="guest-count" disabled style="background-color: #f5f5f5; cursor: not-allowed;">
                         <option value="1">1 kişi (Sadece ben)</option>
                     </select>
