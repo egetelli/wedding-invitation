@@ -1144,7 +1144,7 @@
                     aramızda görmekten mutluluk duyarız.
                 </p>
 
-                <a href="#rsvp-bolumu" onclick="scrollToRSVP()" class="hero-rsvp-btn">KATILIMINI ONAYLA</a>
+                <a href="javascript:void(0)" onclick="scrollToRSVP()" class="hero-rsvp-btn">KATILIMINI ONAYLA</a>
 
                 <div class="hero-scroll-indicator">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
@@ -1391,6 +1391,21 @@
             document.body.appendChild(heart);
 
             setTimeout(() => heart.remove(), 4000);
+        }
+
+        function scrollToRSVP() {
+            // HTML'deki id="rsvp-bolumu" alanını yakalar
+            const rsvpSection = document.getElementById('rsvp-bolumu');
+
+            if (rsvpSection) {
+                // Sayfayı akıcı (smooth) bir şekilde tam kutunun başladığı yere kaydırır
+                rsvpSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            } else {
+                console.error("Hata: rsvp-bolumu ID'li alan sayfa içinde bulunamadı.");
+            }
         }
 
         /* --- MÜZİK KONTROLÜ --- */
